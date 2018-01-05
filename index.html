@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>Example</title>
+    <script src="sigma.min.js"></script>
+    <script src="src/sigma.parsers.netjson.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <style>
+        #graph-container {
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          position: absolute;
+        }
+      </style>
+      <div id="graph-container"></div>
+    </div>
+    <script>
+      sigma.parsers.netjson('netjson.json', 'graph-container');
+    </script>
+  </body>
+</html>
