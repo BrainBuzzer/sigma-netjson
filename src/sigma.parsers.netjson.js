@@ -67,14 +67,19 @@
       if (xhr.readyState === 4) {
         file = JSON.parse(xhr.responseText);
 
-        file.nodes.forEach(function (node) {
+        file.nodes.forEach(function (node, i, a) {
           graph.nodes.push({
             id: 'n' + node.id,
             label: 'Node ' + node.id,
-            x: Math.random(),
-            y: Math.random(),
+            x: Math.cos(Math.PI * 2 * i / a.length),
+            y: Math.sin(Math.PI * 2 * i / a.length),
             size: Math.random() + 0.5,
-            color: '#666'
+            color: '#' + (
+              Math.floor(Math.random() * 16777215).toString(16) + '000000'
+            ).substr(0, 6),
+            data: {
+              IP: node.id
+            }
           });
         });
         file.links.forEach(function (link, i) {
@@ -82,7 +87,7 @@
             id: 'e' + i,
             source: 'n' + link.source,
             target: 'n' + link.target,
-            size: link.cost,
+            size: 1,
             color: '#ccc',
             hover_color: '#000'
           });
@@ -95,7 +100,10 @@
 
         // ...or instantiate sigma if needed:
         } else if (typeof sig === 'object') {
+          // Set the sigma graph object to graph
           sig.graph = graph;
+          
+          // Setup hover setting
           sig.settings = {
             enableEdgeHovering: true,
             edgeHoverColor: 'edge',
@@ -108,9 +116,23 @@
             type: 'canvas'
           }
           sig = new sigma(sig);
-          sig.bind("clickEdge", function (link) {
-            console.log(link.data);
+          
+          // Configure the Fruchterman-Reingold algorithm:
+          var frListener = sigma.layouts.fruchtermanReingold.configure(sig, {
+            iterations: 500,
+            easing: 'quadraticInOut',
+            duration: 800
           });
+
+          // Bind the events:
+          frListener.bind('start stop interpolate', function(e) {
+            console.log(e.type);
+          });
+
+          // Start the Fruchterman-Reingold algorithm:
+          sigma.layouts.fruchtermanReingold.start(sig);
+
+
         // ...or it's finally the callback:
         } else if (typeof sig === 'function') {
           callback = sig;
