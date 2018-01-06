@@ -78,7 +78,7 @@
               Math.floor(Math.random() * 16777215).toString(16) + '000000'
             ).substr(0, 6),
             data: {
-              IP: node.id
+              ip: node.id
             }
           });
         });
@@ -88,33 +88,21 @@
             source: 'n' + link.source,
             target: 'n' + link.target,
             size: 1,
-            color: '#ccc',
-            hover_color: '#000'
+            color: '#ccc'
           });
         });
 
-        // Update the instance's graph:
-        if (sig instanceof sigma) {
-          sig.graph.clear();
-          sig.graph.read(graph);
-
-        // ...or instantiate sigma if needed:
-        } else if (typeof sig === 'object') {
+        if (typeof sig === 'object') {
           // Set the sigma graph object to graph
           sig.graph = graph;
-          
-          // Setup hover setting
-          sig.settings = {
-            enableEdgeHovering: true,
-            edgeHoverColor: 'edge',
-            defaultEdgeHoverColor: '#000',
-            edgeHoverSizeRatio: 1,
-            edgeHoverExtremities: true
-          }
+
+          // Setup renderer
           sig.renderer = {
             container: container,
             type: 'canvas'
           }
+
+          // Initiate Sigma
           sig = new sigma(sig);
           
           // Configure the Fruchterman-Reingold algorithm:
@@ -132,8 +120,32 @@
           // Start the Fruchterman-Reingold algorithm:
           sigma.layouts.fruchtermanReingold.start(sig);
 
+          // Configuration for tooltips
+          var config = {
+            node: {
+              show: 'clickNode',
+              cssClass: 'sigma-tooltip',
+              position: 'top',
+              template:
+              '<div class="arrow"></div>' +
+              ' <div class="sigma-tooltip-header">{{label}}</div>' +
+              '  <div class="sigma-tooltip-body">' +
+              '    <table>' +
+              '      <tr><th>IP:</th> <td>{{data.ip}}</td></tr>' +
+              '    </table>' +
+              '  </div>' +
+              '  <div class="sigma-tooltip-footer">Number of connections: {{degree}}</div>',
+              renderer: function(node, template) {
+                // The function context is sig.graph
+                node.degree = this.degree(node.id);
+                // Returns an HTML string:
+                return Mustache.render(template, node);
+              }
+            }
+          };
 
-        // ...or it's finally the callback:
+          // Instanciate the tooltips plugin with a Mustache renderer for node tooltips:
+          var tooltips = sigma.plugins.tooltips(sig, sig.renderers[0], config);
         } else if (typeof sig === 'function') {
           callback = sig;
           sig = null;
