@@ -1,0 +1,28 @@
+{
+  "name": "sigma-netjson",
+  "version": "0.0.2",
+  "description": "NetJSON Plugin for Sigma.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrainBuzzer/sigma-netjson.git"
+  },
+  "keywords": [
+    "sigma.js",
+    "netjson"
+  ],
+  "author": "Aditya Giri <dtrg21@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BrainBuzzer/sigma-netjson/issues"
+  },
+  "homepage": "https://github.com/BrainBuzzer/sigma-netjson#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^3.0.0"
+  }
+}
