@@ -88,7 +88,13 @@
             source: 'n' + link.source,
             target: 'n' + link.target,
             size: 1,
-            color: '#ccc'
+            color: '#ccc',
+            hover_color: '#000',
+            data: {
+              source: link.source,
+              target: link.target,
+              cost: link.cost
+            }
           });
         });
 
@@ -102,9 +108,20 @@
             type: 'canvas'
           }
 
+          sig.settings = {
+            minEdgeSize: 0.5,
+            maxEdgeSize: 4,
+            enableEdgeHovering: true,
+            edgeHoverSizeRatio: 1,
+            edgeHoverExtremities: true,
+          }
+
+
           // Initiate Sigma
           sig = new sigma(sig);
           
+          sig.refresh();
+
           // Configure the Fruchterman-Reingold algorithm:
           var frListener = sigma.layouts.fruchtermanReingold.configure(sig, {
             iterations: 500,
@@ -141,11 +158,32 @@
                 // Returns an HTML string:
                 return Mustache.render(template, node);
               }
+            },
+            edge: {
+              show: 'overEdge',
+              hide: 'outEdge',
+              cssClass: 'sigma-tooltip',
+              position: 'top',
+              template:
+              '<div class="arrow"></div>' +
+              ' <div class="sigma-tooltip-header">label</div>' +
+              '  <div class="sigma-tooltip-body">' +
+              '    <table>' +
+              '      <tr><th>Source:</th> <td>{{data.source}}</td></tr>' +
+              '      <tr><th>Target:</th> <td>{{data.target}}</td></tr>' +
+              '      <tr><th>Cost:</th> <td>{{data.cost}}</td></tr>' +
+              '    </table>' +
+              '  </div>',
+              renderer: function(edge, template) {
+                // Returns an HTML string:
+                return Mustache.render(template, edge);
+              }
             }
           };
 
           // Instanciate the tooltips plugin with a Mustache renderer for node tooltips:
           var tooltips = sigma.plugins.tooltips(sig, sig.renderers[0], config);
+          sig.refresh();
         } else if (typeof sig === 'function') {
           callback = sig;
           sig = null;
